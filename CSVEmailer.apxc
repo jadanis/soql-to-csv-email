@@ -1,0 +1,42 @@
+/*
+*
+*/
+public class CSVEmailer {
+
+  private static Messaging.SendEmailResult[] emailCSV(String addr, String csvFile, String fileName, String subject) {
+    Messaging.EmailFileAttachment csvAttachment = new Messaging.EmailFileAttachment();
+    Blob csvBlob = Blob.valueOf(csvFile);
+    csvAttachment.setFileName(fileName+'.csv');
+    csvAttachment.setBody(csvBlob);
+    Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+    String[] addresses = new List<String>{addr};
+    email.setToAddresses(addresses);
+    email.setPlainTextBody('Here's the result of your query!');
+    email.setFileAttachment(new Messaging.EmailFileAttachment[]{csvAttachment});
+    Messaging.SendEmailResult[] result = Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
+    return result;
+  } //end of emailCSV()
+  
+  private static SObject[] queryObjects(String[] query, String constraints, String obj){
+  
+    String queryString = 'SELECT ' + fold(query, ', ') + ' FROM ' + obj + constraints;
+    return Database.query(queryString);    
+  
+  } // end of queryObjects()
+  
+  public static String fold(String[] words,String intr){
+  
+    String retString = '';
+    
+    for(Integer i = 0; i < words.size(); i++){
+      retString += words[i];
+      if(i < words.size() - 1){
+        retstring += intr;
+      }
+    }
+  
+    return retString;
+  
+  } //end of fold()
+
+}
